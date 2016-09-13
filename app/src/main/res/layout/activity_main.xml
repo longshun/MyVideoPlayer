@@ -4,15 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.longshun.myvideoplayer.MainActivity"
+    tools:context=".activiy.MainActivity"
     >
-   <ListView
-       android:id="@+id/list_videos"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       />
    <android.support.v7.widget.RecyclerView
-       android:id="@+id/list_video"
+       android:id="@+id/list_videos"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        />
