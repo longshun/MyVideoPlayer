@@ -1,10 +1,15 @@
 package com.longshun.myvideoplayer.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
+import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.longshun.myvideoplayer.R;
@@ -45,6 +50,37 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         viewHolder.tvSize.setText("大小:"+VideoUtils.formatSize(video.getSize())+"M");
         viewHolder.tvDuration.setText("时间:"+hour+":"+min+":"+sec);
         viewHolder.tvDisPlayName.setTag(1);
+        //生成视频缩略图
+        viewHolder.ivThumbnail.setImageResource(R.mipmap.ic_launcher);
+        viewHolder.ivThumbnail.setTag(video.getPath());//解决图片错位问题
+        new LoadThumbnailTask(viewHolder.ivThumbnail).execute(video);
+    }
+
+    /*可以在其他地方生成并保存缩略图，适配器中直接设置，提高RecyclerView的流畅性*/
+    static class LoadThumbnailTask extends AsyncTask<Video,Void,Bitmap>{
+
+        private ImageView ivThumbnail;
+        private Video video;
+
+        public LoadThumbnailTask(ImageView ivThumbnail) {
+            this.ivThumbnail = ivThumbnail;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Video[] objects) {
+            video = objects[0];
+            Bitmap bitmap =  ThumbnailUtils.createVideoThumbnail(video.getPath(), MediaStore.Video.Thumbnails.MINI_KIND);
+            bitmap = ThumbnailUtils.extractThumbnail(bitmap,120,120,ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap o) {
+            String path = (String) ivThumbnail.getTag();
+            if (video.getPath().equals(path)){
+                ivThumbnail.setImageBitmap((Bitmap) o);
+            }
+        }
     }
 
     @Override
@@ -57,12 +93,14 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         TextView tvDisPlayName;
         TextView tvSize;
         TextView tvDuration;
+        ImageView ivThumbnail;
 
         public VideoViewHolder(View itemView) {
             super(itemView);
             tvDisPlayName = (TextView) itemView.findViewById(R.id.tv_display_name);
             tvSize = (TextView) itemView.findViewById(R.id.tv_size);
             tvDuration = (TextView) itemView.findViewById(R.id.tv_duration);
+            ivThumbnail = (ImageView) itemView.findViewById(R.id.iv_thumbnail);
 
             itemView.setOnClickListener(this);
         }

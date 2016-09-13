@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements VideosAdapter.OnR
     public void onItemClick(View view, int position) {
         Intent intent = new Intent(this, PlayVideoActivity.class);
         //// TODO: 2016/9/13 传递数据
+
         startActivity(intent);
     }
 }
